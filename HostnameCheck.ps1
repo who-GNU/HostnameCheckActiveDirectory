@@ -22,7 +22,8 @@ foreach ($Computer in $ComputerList) {
 
 
     # Check if the computer exists in Active Directory
-    $ComputerExists = Get-ADComputer -Filter {Name -eq $Computer.ComputerName} -ErrorAction SilentlyContinue
+    $ComputerCheck = $Computer | Select -Expand ComputerName
+    $ComputerExists = Get-ADComputer -Filter {Name -eq $ComputerCheck} -ErrorAction SilentlyContinue
 
     # Add the result to the array
     $Results += [PSCustomObject]@{
