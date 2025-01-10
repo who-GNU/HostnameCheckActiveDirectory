@@ -20,12 +20,16 @@ foreach ($Computer in $ComputerList) {
     $CurrentComputer++
     Write-Progress -Activity "Checking Computers in AD" -Status "Processing $CurrentComputer of $TotalComputers" -PercentComplete (($CurrentComputer / $TotalComputers) * 100)
 
-    # Extract the hostname from the FQDN if present and filter out domain names
-    $ComputerName = ($Computer.ComputerName -split '\.')[0]
+    # Extract the hostname from the FQDN if present
+    $ComputerName = if ($Computer.ComputerName -match '\.') {
+        ($Computer.ComputerName -split '\.')[0]
+    } else {
+        $Computer.ComputerName
+    }
 
-    # Skip entries that are likely domain names (e.g., contain no hostname)
-    if (-not $ComputerName) {
-        Write-Host "Skipping entry with no hostname: $($Computer.ComputerName)"
+    # Ensure the computer name is not empty
+    if ([string]::IsNullOrWhiteSpace($ComputerName)) {
+        Write-Host "Skipping invalid entry: $($Computer.ComputerName)"
         continue
     }
 
