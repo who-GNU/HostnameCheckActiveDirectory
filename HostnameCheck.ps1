@@ -20,21 +20,9 @@ foreach ($Computer in $ComputerList) {
     $CurrentComputer++
     Write-Progress -Activity "Checking Computers in AD" -Status "Processing $CurrentComputer of $TotalComputers" -PercentComplete (($CurrentComputer / $TotalComputers) * 100)
 
-    # Extract the hostname from the FQDN if present
-    $ComputerName = if ($Computer.ComputerName -match '\.') {
-        ($Computer.ComputerName -split '\.')[0]
-    } else {
-        $Computer.ComputerName
-    }
-
-    # Ensure the computer name is not empty
-    if ([string]::IsNullOrWhiteSpace($ComputerName)) {
-        Write-Host "Skipping invalid entry: $($Computer.ComputerName)"
-        continue
-    }
 
     # Check if the computer exists in Active Directory
-    $ComputerExists = Get-ADComputer -Filter {Name -eq $ComputerName} -ErrorAction SilentlyContinue
+    $ComputerExists = Get-ADComputer -Filter {Name -eq $Computer.ComputerName} -ErrorAction SilentlyContinue
 
     # Add the result to the array
     $Results += [PSCustomObject]@{
